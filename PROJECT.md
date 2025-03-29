@@ -54,7 +54,7 @@ zig-llm/
 
 ### Phase 1: Scaffolding
 
-- [ ] Set up Zig project and build.zig
+- [x] Set up Zig project and build.zig
 - [ ] Implement basic tensor structure and Accelerate wrapper (vDSP/BNNS)
 - [ ] Port `llm.c`’s data loading and parameter initialization
 
