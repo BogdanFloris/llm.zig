@@ -33,6 +33,28 @@ pub fn Tensor(comptime T: type, comptime N: usize) type {
             };
         }
 
+        pub fn initWithValue(
+            shape: [N]usize,
+            allocator: Allocator,
+            value: T,
+            options: Configuration,
+        ) !Self {
+            var size: usize = 1;
+            inline for (shape) |s| {
+                size *= s;
+            }
+
+            const items = try allocator.alloc(T, size);
+            @memset(items, value);
+
+            return Self{
+                .items = items,
+                .shape = shape,
+                .allocator = allocator,
+                .options = options,
+            };
+        }
+
         pub fn deinit(self: *Self) void {
             self.allocator.free(self.items);
         }
@@ -48,5 +70,18 @@ test "Tensor" {
     // Check that the items are initialized to 0
     for (t.items) |item| {
         try testing.expectEqual(item, 0);
+    }
+
+    // Init with value
+    var t_with_value = try Tensor(f32, 3).initWithValue(
+        .{ 4, 4, 4 },
+        testing.allocator,
+        4.2,
+        .{},
+    );
+    defer t_with_value.deinit();
+
+    for (t_with_value.items) |item| {
+        try testing.expectEqual(item, 4.2);
     }
 }
